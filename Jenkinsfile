@@ -20,7 +20,7 @@ pipeline {
             steps {
                 bat "${env.PYTHON} -m pip install --upgrade pip"
                 bat "${env.PYTHON} -m pip install -r requirements.txt"
-                bat "${env.PYTHON} -m pip install pytest-html pytest-merger"
+                bat "${env.PYTHON} -m pip install pytest-html"
             }
         }
 
@@ -30,11 +30,23 @@ pipeline {
                     steps {
                         bat "${env.PYTHON} -m pytest -v -s -m testschema --junitxml=schema_results.xml --html=schema_report.html"
                     }
+                    post {
+                        always {
+                            junit 'schema_results.xml'
+                            archiveArtifacts artifacts: 'schema_report.html', fingerprint: true
+                        }
+                    }
                 }
 
                 stage('Test Constraint') {
                     steps {
                         bat "${env.PYTHON} -m pytest -v -s -m testconst --junitxml=constraint_results.xml --html=constraint_report.html"
+                    }
+                    post {
+                        always {
+                            junit 'constraint_results.xml'
+                            archiveArtifacts artifacts: 'constraint_report.html', fingerprint: true
+                        }
                     }
                 }
 
@@ -42,26 +54,25 @@ pipeline {
                     steps {
                         bat "${env.PYTHON} -m pytest -v -s -m testcrud --junitxml=crud_results.xml --html=crud_report.html"
                     }
+                    post {
+                        always {
+                            junit 'crud_results.xml'
+                            archiveArtifacts artifacts: 'crud_report.html', fingerprint: true
+                        }
+                    }
                 }
 
                 stage('Test Integrity') {
                     steps {
                         bat "${env.PYTHON} -m pytest -v -s -m testintegrity --junitxml=integrity_results.xml --html=integrity_report.html"
                     }
+                    post {
+                        always {
+                            junit 'integrity_results.xml'
+                            archiveArtifacts artifacts: 'integrity_report.html', fingerprint: true
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Report') {
-            steps {
-                // Aggregate JUnit XML results
-                junit '**/*results.xml'
-
-                // Merge HTML reports into one
-                bat "${env.PYTHON} -m pytest_merger --input schema_report.html constraint_report.html crud_report.html integrity_report.html --output merged_report.html"
-
-                // Archive final merged report
-                archiveArtifacts artifacts: 'merged_report.html', fingerprint: true
             }
         }
     }
@@ -71,7 +82,7 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Build and test successful!'
+            echo 'Build and tests successful!'
         }
         failure {
             echo 'Pipeline failed - check logs and reports.'
