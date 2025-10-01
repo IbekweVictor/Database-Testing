@@ -10,7 +10,7 @@ class TestSchema:
     def test_user_schema(self, db_session):
         '''Check table names'''
         inspector = sa.inspect(db_session.bind)
-        expected_tables = {"users", "order"}
+        expected_tables = {"users", "orders"}
         actual_tables = set(inspector.get_table_names())
         assert expected_tables.issubset(actual_tables)
     

@@ -9,7 +9,7 @@ class User(Base):
     name = Column(String, nullable=False, unique=True, index=True)
     email = Column(String, nullable=False, unique=True, index=True)
     age = Column(Integer, nullable=True, index=True)
-    orders = relationship("Order", back_populates="users")
+    orders = relationship("Order", back_populates="user")
 
 class Order(Base):
     __tablename__ = "orders"
