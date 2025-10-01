@@ -6,10 +6,10 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True,index = True)
+    name = Column(String, nullable=False, unique=True, index=True)
     email = Column(String, nullable=False, unique=True, index=True)
     age = Column(Integer, nullable=True, index=True)
-    orders = relationship("Order", back_populates="user")
+    orders = relationship("Order", back_populates="users")
 
 class Order(Base):
     __tablename__ = "orders"

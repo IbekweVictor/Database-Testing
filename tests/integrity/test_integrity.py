@@ -4,6 +4,7 @@ from sqlalchemy import func
 
 class Test_Integrity:
     @pytest.mark.testdb
+    @pytest.mark.testintegrity
     def test_no_duplicate_email(self,db_session):
         '''Test that duplicate emails are avoided'''
         duplicate = (
